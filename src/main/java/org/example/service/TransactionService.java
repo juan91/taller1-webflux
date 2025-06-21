@@ -80,7 +80,7 @@ public class TransactionService {
         return transactionRepo.save(tx)
                 .flatMap(ledgerClient::postEntry)
                 .map(this::toDto)
-                .retryWhen(
+                .retryWhen(// si falla ejecute todo el flujo incluso, el save
                         Retry.backoff(3, Duration.ofSeconds(2)) // 3 intentos, con backoff exponencial desde 2s
                                 .maxBackoff(Duration.ofSeconds(10)) // Tiempo máximo entre reintentos
                                 .filter(e -> e instanceof RuntimeException) // solo reintenta si es este tipo de error
