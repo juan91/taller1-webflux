@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:QiY19FlMoZ2R5GhX@galeras.vjcyxol.mongodb.net/cashflow
+ledger:
+  base-url: http://localhost:8080/
+
+logging:
+  level:
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+
+server:
+  port: 8080
