@@ -2,16 +2,15 @@ package org.example.service;
 
 import org.example.dto.CashRequestDto;
 import org.example.dto.TransactionDto;
+import org.example.handler.Publisher;
 import org.example.model.Transaction;
 import org.example.model.TransactionStatus;
 import org.example.model.TransactionType;
 import org.example.repo.TransactionRepo;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-import javax.swing.text.ChangedCharSetException;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -20,10 +19,12 @@ public class TransactionService {
 
     private final TransactionRepo transactionRepo;
     private final LedgerClient ledgerClient;
+    private final Publisher publisher;
 
-    public TransactionService(TransactionRepo transactionRepo, LedgerClient ledgerClient) {
+    public TransactionService(TransactionRepo transactionRepo, LedgerClient ledgerClient, Publisher publisher) {
         this.transactionRepo = transactionRepo;
         this.ledgerClient = ledgerClient;
+        this.publisher = publisher;
     }
 
     public Mono<TransactionDto> cashIn(CashRequestDto cashRequestDto) {
@@ -58,7 +59,9 @@ public class TransactionService {
                                                 .onRetryExhaustedThrow((spec, signal) -> signal.failure())
                                 )
                                 .map(this::toDto)
+                                .doOnSuccess(publisher::publish)
                                 .onErrorResume(e -> rollback(savedTx, e))
+
                 );
     }
 
@@ -89,6 +92,7 @@ public class TransactionService {
                                 )
 
                 )
+                .doOnSuccess(publisher::publish)
                 .onErrorResume(e -> rollback(tx, e));
     }
 

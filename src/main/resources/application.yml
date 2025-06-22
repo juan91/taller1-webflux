@@ -1,7 +1,9 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://user:pass@galeras.vjcyxol.mongodb.net/cashflow
+      uri: mongodb+srv://admin:QiY19FlMoZ2R5GhX@galeras.vjcyxol.mongodb.net/cashflow
+  rabbitmq:
+    addresses: amqps://ltqlmrty:I9geTinkznSEzhMLw0SI7VTD0ERfuXJW@possum.lmq.cloudamqp.com/ltqlmrty
 ledger:
   base-url: http://localhost:8080/
 
